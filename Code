@@ -1,0 +1,66 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.api as sm
+
+# Load the Titanic dataset
+titanic = pd.read_csv('titanic.csv')
+
+# Data cleaning and preprocessing
+titanic = titanic.drop(['Cabin', 'Ticket', 'Name'], axis=1) # drop unnecessary columns
+titanic = titanic.dropna() # drop rows with missing data
+titanic['Sex'] = titanic['Sex'].map({'female': 0, 'male': 1}) # recode gender as numeric
+titanic['Embarked'] = titanic['Embarked'].map({'C': 0, 'Q': 1, 'S': 2}) # recode embarked as numeric
+
+# Exploratory Data Analysis
+# Histogram of age distribution
+sns.histplot(titanic['Age'], kde=False, bins=30)
+plt.title('Age Distribution on Titanic')
+plt.xlabel('Age')
+plt.ylabel('Count')
+plt.show()
+
+# Correlation matrix
+corr = titanic.corr()
+sns.heatmap(corr, cmap='coolwarm', annot=True)
+plt.title('Correlation Matrix')
+plt.show()
+
+# Boxplot of fare by passenger class
+sns.boxplot(x='Pclass', y='Fare', data=titanic)
+plt.title('Fare by Passenger Class')
+plt.xlabel('Passenger Class')
+plt.ylabel('Fare')
+plt.show()
+
+# Statistical Analysis
+# Test for normality of age
+shapiro = stats.shapiro(titanic['Age'])
+print('Shapiro-Wilk Test for Normality')
+print('Test statistic: {:.4f}'.format(shapiro[0]))
+print('p-value: {:.4f}'.format(shapiro[1]))
+
+# Test for difference in mean fare by passenger class
+group1 = titanic[titanic['Pclass'] == 1]['Fare']
+group2 = titanic[titanic['Pclass'] == 2]['Fare']
+group3 = titanic[titanic['Pclass'] == 3]['Fare']
+anova = stats.f_oneway(group1, group2, group3)
+print('One-way ANOVA Test')
+print('F-statistic: {:.4f}'.format(anova[0]))
+print('p-value: {:.4f}'.format(anova[1]))
+
+# Visualization and Dashboarding
+# Scatterplot of age vs. fare by survival status
+g = sns.relplot(x='Age', y='Fare', hue='Survived', data=titanic, height=6)
+g.set_axis_labels('Age', 'Fare')
+g.fig.suptitle('Age vs. Fare by Survival Status')
+plt.show()
+
+# Create a dashboard using Tableau or PowerBI
+
+# Documentation
+# Write comments and annotations to explain the thought process and reasoning behind each step of the project
+# Publish the code and analysis on a public repository on Github
